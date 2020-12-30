@@ -1,0 +1,33 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:user_messaging_platform/user_messaging_platform.dart';
+
+void main() => run(_testMain);
+
+void _testMain() {
+  testWidgets('request consent information update',
+      (WidgetTester tester) async {
+    final ump = UserMessagingPlatform.instance;
+
+    var info = await ump.getConsentInfo();
+
+    expect(info.formStatus, equals(FormStatus.unknown));
+
+    info = await ump.requestConsentInfoUpdate();
+
+    expect(info.formStatus, equals(FormStatus.available));
+  });
+
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    testWidgets(
+      'get tracking authorization status',
+      (WidgetTester tester) async {
+        final status = await UserMessagingPlatform.instance
+            .getTrackingAuthorizationStatus();
+
+        expect(status, equals(TrackingAuthorizationStatus.notDetermined));
+      },
+    );
+  }
+}

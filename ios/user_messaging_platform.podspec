@@ -6,13 +6,13 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Gabriel Terwesten' => 'gabriel@terwesten.net' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.dependency 'Flutter'
-  s.platform = :ios, '8.0'
-
+  s.platform         = :ios, '8.0'
+  s.swift_version    = '5.0'
+  s.source_files     = 'Classes/**/*'
+  s.static_framework = true
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  s.swift_version = '5.0'
 
-  s.dependency 'Google-Mobile-Ads-SDK'
+  s.dependency 'Flutter'
+  s.dependency 'GoogleUserMessagingPlatform'
 end

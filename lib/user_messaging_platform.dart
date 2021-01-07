@@ -129,6 +129,9 @@ enum RequestErrorCode {
 
   /// Some kind of misconfiguration.
   misconfiguration,
+
+  /// Invalid operation. The SDK is being invoked incorrectly.
+  invalidOperation,
 }
 
 /// Exception which is thrown from
@@ -163,6 +166,9 @@ enum FormErrorCode {
 
   /// Loading a form timed out.
   timeout,
+
+  /// Invalid operation. The SDK is being invoked incorrectly.
+  invalidOperation,
 }
 
 /// Exception which is thrown from

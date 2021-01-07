@@ -24,3 +24,6 @@ flutter:
     platforms:
       ios:
         pluginClass: UserMessagingPlatformPlugin
+      android:
+        package: com.terwesten.gabriel.user_messaging_platform
+        pluginClass: UserMessagingPlatformPlugin

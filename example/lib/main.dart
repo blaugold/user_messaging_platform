@@ -22,11 +22,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    _ump.getTrackingAuthorizationStatus().then((status) {
-      setState(() {
-        _trackingAuthorizationStatus = status;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      _ump.getTrackingAuthorizationStatus().then((status) {
+        setState(() {
+          _trackingAuthorizationStatus = status;
+        });
       });
-    });
+    }
 
     _ump.getConsentInfo().then((info) {
       setState(() {

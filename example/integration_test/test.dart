@@ -12,7 +12,12 @@ void _testMain() {
 
     var info = await ump.getConsentInfo();
 
-    expect(info.formStatus, equals(FormStatus.unknown));
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // On android formStatus is a bool, so `unknown` does not apply.
+      expect(info.formStatus, equals(FormStatus.unavailable));
+    } else {
+      expect(info.formStatus, equals(FormStatus.unknown));
+    }
 
     info = await ump.requestConsentInfoUpdate();
 

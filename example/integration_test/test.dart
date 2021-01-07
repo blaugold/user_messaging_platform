@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:user_messaging_platform/user_messaging_platform.dart';
 
-void main() => run(_testMain);
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-void _testMain() {
   testWidgets('request consent information update',
       (WidgetTester tester) async {
     final ump = UserMessagingPlatform.instance;

@@ -19,10 +19,10 @@ class _MyAppState extends State<MyApp> {
   final _ump = UserMessagingPlatform.instance;
 
   // Only applicable to iOS.
-  TrackingAuthorizationStatus _trackingAuthorizationStatus;
+  TrackingAuthorizationStatus? _trackingAuthorizationStatus;
 
   // The latest consent info.
-  ConsentInformation _consentInformation;
+  ConsentInformation? _consentInformation;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
             children: [
               // UMP
               Text(
-                'User Meassaging Platform',
+                'User Messaging Platform',
                 style: Theme.of(context).textTheme.headline5,
               ),
               SizedBox(height: 16),
@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
               if (defaultTargetPlatform == TargetPlatform.iOS) ...[
                 SizedBox(height: 32),
                 Text(
-                  'App Tracking Trancparency',
+                  'App Tracking Transparency',
                   style: Theme.of(context).textTheme.headline5,
                 ),
                 SizedBox(height: 16),

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -51,12 +52,10 @@ enum FormStatus {
 class ConsentInformation {
   /// Const constructor for [ConsentInformation].
   const ConsentInformation({
-    @required this.consentStatus,
-    @required this.consentType,
-    @required this.formStatus,
-  })  : assert(consentStatus != null),
-        assert(consentType != null),
-        assert(formStatus != null);
+    required this.consentStatus,
+    required this.consentType,
+    required this.formStatus,
+  });
 
   /// The user’s consent status. This value is cached between app sessions and
   /// can be read before requesting updated parameters.
@@ -96,14 +95,12 @@ class ConsentInformation {
 abstract class UserMessagingPlatformException implements Exception {
   /// Constructor for subclasses.
   const UserMessagingPlatformException({
-    @required this.message,
-    @required this.code,
-    @required this.originalException,
-  })  : assert(message != null),
-        assert(code != null),
-        assert(originalException != null);
+    required this.message,
+    required this.code,
+    required this.originalException,
+  });
 
-  /// A humang redable message, describing the exception.
+  /// A human readable message, describing the exception.
   final String message;
 
   /// An error code.
@@ -140,9 +137,9 @@ enum RequestErrorCode {
 class RequestException extends UserMessagingPlatformException {
   /// Const constructor for [RequestException].
   const RequestException({
-    @required String message,
-    @required RequestErrorCode code,
-    @required PlatformException originalException,
+    required String message,
+    required RequestErrorCode code,
+    required PlatformException originalException,
   }) : super(
           message: message,
           code: code,
@@ -177,9 +174,9 @@ enum FormErrorCode {
 class FormException extends UserMessagingPlatformException {
   /// Const constructor for [FormException].
   const FormException({
-    @required String message,
-    @required FormErrorCode code,
-    @required PlatformException originalException,
+    required String message,
+    required FormErrorCode code,
+    required PlatformException originalException,
   }) : super(
           message: message,
           code: code,
@@ -219,7 +216,7 @@ enum TrackingAuthorizationStatus {
 ///
 /// ## App Tracking Transparency Framework (iOS/macOS)
 ///
-/// To use the App Tracking Trancparency framework:
+/// To use the App Tracking Transparency framework:
 /// - Set up a [NSUserTrackingUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nsusertrackingusagedescription)
 /// - Link the app to the `AppTrackingTransparency` framework
 ///
@@ -241,7 +238,7 @@ class UserMessagingPlatform {
   /// To get the most up to date information use [requestConsentInfoUpdate].
   Future<ConsentInformation> getConsentInfo() => _channel
       .invokeMethod<Map>('getConsentInfo')
-      .then((it) => it.cast<String, String>())
+      .then((it) => it!.cast<String, String>())
       .then(_parseConsentInformation);
 
   /// Updates the [ConsentInformation] for the current user.
@@ -251,7 +248,7 @@ class UserMessagingPlatform {
     try {
       return await _channel
           .invokeMethod<Map>('requestConsentInfoUpdate')
-          .then((it) => it.cast<String, String>())
+          .then((it) => it!.cast<String, String>())
           .then(_parseConsentInformation);
     } on PlatformException catch (exception) {
       if (exception.code == _unknownErrorCode) {
@@ -264,7 +261,7 @@ class UserMessagingPlatform {
       }
 
       throw RequestException(
-        message: exception.message,
+        message: exception.message!,
         code: code,
         originalException: exception,
       );
@@ -279,7 +276,7 @@ class UserMessagingPlatform {
     try {
       return await _channel
           .invokeMethod<Map>('showConsentForm')
-          .then((it) => it.cast<String, String>())
+          .then((it) => it!.cast<String, String>())
           .then(_parseConsentInformation);
     } on PlatformException catch (exception) {
       if (exception.code == _unknownErrorCode) {
@@ -292,7 +289,7 @@ class UserMessagingPlatform {
       }
 
       throw FormException(
-        message: exception.message,
+        message: exception.message!,
         code: code,
         originalException: exception,
       );
@@ -313,7 +310,7 @@ class UserMessagingPlatform {
   ///
   /// See:
   /// - [ATT Docs](https://developer.apple.com/documentation/apptrackingtransparency)
-  Future<TrackingAuthorizationStatus> getTrackingAuthorizationStatus() =>
+  Future<TrackingAuthorizationStatus?> getTrackingAuthorizationStatus() =>
       _channel.invokeMethod<String>('getTrackingAuthorizationStatus').then(
           (result) => result == null
               ? null
@@ -332,24 +329,21 @@ class UserMessagingPlatform {
   ///
   /// See:
   /// - [ATT Docs](https://developer.apple.com/documentation/apptrackingtransparency)
-  Future<TrackingAuthorizationStatus> requestTrackingAuthorization() => _channel
-      .invokeMethod<String>('requestTrackingAuthorization')
-      .then((result) => result == null
-          ? null
-          : _enumFromString(TrackingAuthorizationStatus.values, result));
+  Future<TrackingAuthorizationStatus?> requestTrackingAuthorization() =>
+      _channel.invokeMethod<String>('requestTrackingAuthorization').then(
+          (result) => result == null
+              ? null
+              : _enumFromString(TrackingAuthorizationStatus.values, result));
 }
 
 ConsentInformation _parseConsentInformation(Map<String, String> info) =>
     ConsentInformation(
       consentStatus:
-          _enumFromString(ConsentStatus.values, info['consentStatus']),
-      consentType: _enumFromString(ConsentType.values, info['consentType']),
-      formStatus: _enumFromString(FormStatus.values, info['formStatus']),
+          _enumFromString(ConsentStatus.values, info['consentStatus']!)!,
+      consentType: _enumFromString(ConsentType.values, info['consentType']!)!,
+      formStatus: _enumFromString(FormStatus.values, info['formStatus']!)!,
     );
 
 /// Returns one of the values of an enum, whose name matches a string.
-T _enumFromString<T>(List<T> enumValues, String valueName) =>
-    enumValues.firstWhere(
-      (it) => describeEnum(it) == valueName,
-      orElse: () => null,
-    );
+T? _enumFromString<T extends Object>(List<T> enumValues, String valueName) =>
+    enumValues.firstWhereOrNull((it) => describeEnum(it) == valueName);

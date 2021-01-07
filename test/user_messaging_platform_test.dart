@@ -20,7 +20,7 @@ void main() {
   const channel =
       MethodChannel('com.terwesten.gabriel/user_messaging_platform');
 
-  final methodCallResult = <String, Object>{};
+  final methodCallResult = <String, Object?>{};
   final methodCallException = <String, PlatformException>{};
 
   final ump = UserMessagingPlatform.instance;
@@ -32,7 +32,7 @@ void main() {
       }
 
       if (methodCallException.containsKey(methodCall.method)) {
-        throw methodCallException[methodCall.method];
+        throw methodCallException[methodCall.method]!;
       }
 
       throw UnimplementedError();
@@ -67,7 +67,7 @@ void main() {
       code: 'internal',
     );
 
-    RequestException ex;
+    late RequestException ex;
     try {
       await ump.requestConsentInfoUpdate();
     } on RequestException catch (_ex) {
@@ -92,7 +92,7 @@ void main() {
       code: 'internal',
     );
 
-    FormException ex;
+    late FormException ex;
     try {
       await ump.showConsentForm();
     } on FormException catch (_ex) {

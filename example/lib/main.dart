@@ -14,14 +14,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // Using a field to access the plugin makes access less verbose and allows
+  // replacing it with a mock for testing.
   final _ump = UserMessagingPlatform.instance;
 
+  // Only applicable to iOS.
   TrackingAuthorizationStatus _trackingAuthorizationStatus;
 
+  // The latest consent info.
   ConsentInformation _consentInformation;
 
   @override
   void initState() {
+    // Load the current `TrackingAuthorizationStatus`.
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       _ump.getTrackingAuthorizationStatus().then((status) {
         setState(() {
@@ -30,6 +35,8 @@ class _MyAppState extends State<MyApp> {
       });
     }
 
+    // Load the latest `ConsentInformation`. This will always work but does
+    // not request the latest info from the UMP backend.
     _ump.getConsentInfo().then((info) {
       setState(() {
         _consentInformation = info;
@@ -44,13 +51,14 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('user_messaging_platform example app'),
+          title: const Text('user_messaging_platform example'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // UMP
               Text(
                 'User Meassaging Platform',
                 style: Theme.of(context).textTheme.headline5,

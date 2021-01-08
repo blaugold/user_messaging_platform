@@ -7,9 +7,9 @@
 A flutter plugin which provides a Dart API for the User Messaging Platform (UMP) SDK, which is the 
 Consent Management Platform (CMP) SDK provided as part of Google's [Funding Choices].
 
-Also see the [iabtcf_consent_info](https://pub.dev/packages/iabtcf_consent_info) package, for reading TCF consent
-info make available though Consent Management Platform SDKs such as UMP. If you have configured Funding Choices to
-obtain consent for for additional purposes for you, the publisher, this package allows you to access that information. 
+Also, see the [iabtcf_consent_info](https://pub.dev/packages/iabtcf_consent_info) package, for reading TCF consent
+info, made available though Consent Management Platform SDKs, such as UMP. If you have configured Funding Choices to
+obtain consent for additional purposes for you, the publisher, this package allows you to access that information. 
 
 ## Setup
 

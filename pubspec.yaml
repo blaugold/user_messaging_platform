@@ -1,6 +1,6 @@
 name: user_messaging_platform
 description: >-
-  A flutter plugin which provides a Dart API for the User Messaging Platform (UMP) SDK, which is the
+  A plugin which provides a Dart API for the User Messaging Platform (UMP) SDK, which is the
   Consent Management Platform (CMP) SDK provided as part of Google's Funding Choices.
 version: 0.1.0
 repository: https://github.com/blaugold/user_messaging_platform

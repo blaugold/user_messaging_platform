@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+- revert to sdk constraint `>=2.12.0-0 <3.0.0`
+
 ## 0.2.0
 
 - **FEAT** migrate to nullsafety

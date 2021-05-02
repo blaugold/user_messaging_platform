@@ -149,7 +149,7 @@ private func serializeConsentInfo(_ info: UMPConsentInformation) -> [String: Str
     ]
 }
 
-private extension UMPConsentStatus: CustomStringConvertible {
+extension UMPConsentStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -166,7 +166,7 @@ private extension UMPConsentStatus: CustomStringConvertible {
     }
 }
 
-private extension UMPConsentType: CustomStringConvertible {
+extension UMPConsentType: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -181,7 +181,7 @@ private extension UMPConsentType: CustomStringConvertible {
     }
 }
 
-private extension UMPFormStatus: CustomStringConvertible {
+extension UMPFormStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -196,7 +196,7 @@ private extension UMPFormStatus: CustomStringConvertible {
     }
 }
 
-private extension UMPRequestErrorCode: CustomStringConvertible {
+extension UMPRequestErrorCode: CustomStringConvertible {
     public var description: String {
         switch self {
         case .internal:
@@ -213,7 +213,7 @@ private extension UMPRequestErrorCode: CustomStringConvertible {
     }
 }
 
-private extension UMPFormErrorCode: CustomStringConvertible {
+extension UMPFormErrorCode: CustomStringConvertible {
     public var description: String {
         switch self {
         case .internal:
@@ -231,7 +231,7 @@ private extension UMPFormErrorCode: CustomStringConvertible {
 }
 
 @available(iOS 14, *)
-private extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible {
+extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .authorized:
@@ -248,17 +248,18 @@ private extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible
     }
 }
 
-private func parseConsentRequestParameters(json: Any?) -> UMPRequestParameters {
+private func parseConsentRequestParameters(_ json: Any?) -> UMPRequestParameters {
     let parameters = UMPRequestParameters()
+    
     if let json = json as? [String:Any?]  {
         if let tagForUnderAgeOfConsent = json["tagForUnderAgeOfConsent"] as? Bool {
             parameters.tagForUnderAgeOfConsent = tagForUnderAgeOfConsent 
         }
 
-        if let debugSettingsJson = json["debugSettings"] as [String:Any?] {
+        if let debugSettingsJson = json["debugSettings"] as? [String:Any?] {
             let debugSettings = UMPDebugSettings()
-            debugSettings.testDeviceIds = debugSettingsJson["testDeviceIds"] as [String]?
-            debugSettings.geography = parseDebugGeography(debugSettingsJson["geography"] as String)
+            debugSettings.testDeviceIdentifiers = debugSettingsJson["testDeviceIds"] as! [String]?
+            debugSettings.geography = parseDebugGeography(debugSettingsJson["geography"] as! String)
             parameters.debugSettings = debugSettings
         }
     }
@@ -266,7 +267,7 @@ private func parseConsentRequestParameters(json: Any?) -> UMPRequestParameters {
     return parameters
 }
 
-private func parseDebugGeography(value: String) {
+private func parseDebugGeography(_ value: String) -> UMPDebugGeography {
     switch value {
     case "disabled":
         return UMPDebugGeography.disabled

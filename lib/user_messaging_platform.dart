@@ -1,7 +1,101 @@
-import 'package:collection/collection.dart' show IterableExtension;
+import 'package:collection/collection.dart'
+    show IterableExtension, DeepCollectionEquality;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
+
+/// Debug values for testing geography.
+enum DebugGeography {
+  /// Disable geography debugging.
+  disabled,
+
+  /// Geography appears as in EEA for debug devices.
+  EEA,
+
+  /// Geography appears as not in EEA for debug devices.
+  notEEA,
+}
+
+/// Settings for debugging or testing.
+@immutable
+class ConsentDebugSettings {
+  /// Creates settings for debugging or testing.
+  ConsentDebugSettings({
+    this.testDeviceIds,
+    this.geography = DebugGeography.disabled,
+  });
+
+  /// Array of device identifier strings. Debug features are enabled for devices
+  /// with these identifiers.
+  ///
+  /// Test devices must be added individually so that debug geography settings
+  /// won't accidentally get released to all users.
+  ///
+  /// ## iOS
+  ///
+  /// Debug features are always enabled for simulators.
+  ///
+  /// ## Android
+  ///
+  /// You can access the hashedDeviceId from logcat once your app calls
+  final List<String>? testDeviceIds;
+
+  /// The debug geography for testing purposes.
+  final DebugGeography geography;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConsentDebugSettings &&
+          runtimeType == other.runtimeType &&
+          const DeepCollectionEquality.unordered()
+              .equals(testDeviceIds, other.testDeviceIds) &&
+          geography == other.geography;
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality.unordered().hash(testDeviceIds) ^
+      geography.hashCode;
+
+  @override
+  String toString() => 'ConsentDebugSettings('
+      'testDeviceIds: $testDeviceIds, '
+      'geography: $geography'
+      ')';
+}
+
+/// Parameters sent on updates to user consent info.
+@immutable
+class ConsentRequestParameters {
+  /// Creates parameters sent on updates to user consent info.
+  ConsentRequestParameters({
+    this.tagForUnderAgeOfConsent = false,
+    this.debugSettings,
+  });
+
+  /// Indicates whether the user is tagged for under age of consent.
+  final bool tagForUnderAgeOfConsent;
+
+  /// Debug settings for the request.
+  final ConsentDebugSettings? debugSettings;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConsentRequestParameters &&
+          runtimeType == other.runtimeType &&
+          tagForUnderAgeOfConsent == other.tagForUnderAgeOfConsent &&
+          debugSettings == other.debugSettings;
+
+  @override
+  int get hashCode => tagForUnderAgeOfConsent.hashCode ^ debugSettings.hashCode;
+
+  @override
+  String toString() => 'ConsentRequestParameters('
+      'tagForUnderAgeOfConsent: $tagForUnderAgeOfConsent, '
+      'debugSettings: $debugSettings'
+      ')';
+}
 
 /// Consent status values.
 enum ConsentStatus {
@@ -84,10 +178,11 @@ class ConsentInformation {
       consentStatus.hashCode ^ consentType.hashCode ^ formStatus.hashCode;
 
   @override
-  String toString() => 'UMPConsentInformation('
+  String toString() => 'ConsentInformation('
       'consentStatus: $consentStatus, '
       'consentType: $consentType, '
-      'formStatus: $formStatus)';
+      'formStatus: $formStatus'
+      ')';
 }
 
 /// Base exception for exceptions thrown by [UserMessagingPlatform].
@@ -109,8 +204,10 @@ abstract class UserMessagingPlatformException implements Exception {
   /// The original platform exception.
   final PlatformException originalException;
 
+  String get _debugName;
+
   @override
-  String toString() => '$runtimeType(message: $message, code: $code)';
+  String toString() => '$_debugName(message: $message, code: $code)';
 }
 
 /// Error codes used when making requests to update consent info.
@@ -145,6 +242,9 @@ class RequestException extends UserMessagingPlatformException {
           code: code,
           originalException: originalException,
         );
+
+  @override
+  String get _debugName => 'RequestException';
 
   @override
   RequestErrorCode get code => super.code as RequestErrorCode;
@@ -182,6 +282,9 @@ class FormException extends UserMessagingPlatformException {
           code: code,
           originalException: originalException,
         );
+
+  @override
+  String get _debugName => 'FormException';
 
   @override
   FormErrorCode get code => super.code as FormErrorCode;
@@ -244,10 +347,12 @@ class UserMessagingPlatform {
   /// Updates the [ConsentInformation] for the current user.
   ///
   /// Callers should handle [RequestException]s.
-  Future<ConsentInformation> requestConsentInfoUpdate() async {
+  Future<ConsentInformation> requestConsentInfoUpdate([
+    ConsentRequestParameters? parameters,
+  ]) async {
     try {
       return await _channel
-          .invokeMethod<Map>('requestConsentInfoUpdate')
+          .invokeMethod<Map>('requestConsentInfoUpdate', parameters?.toJson())
           .then((it) => it!.cast<String, String>())
           .then(_parseConsentInformation);
     } on PlatformException catch (exception) {
@@ -347,3 +452,19 @@ ConsentInformation _parseConsentInformation(Map<String, String> info) =>
 /// Returns one of the values of an enum, whose name matches a string.
 T? _enumFromString<T extends Object>(List<T> enumValues, String valueName) =>
     enumValues.firstWhereOrNull((it) => describeEnum(it) == valueName);
+
+String _enumToString(Object value) => value.toString().split('.')[1];
+
+extension on ConsentDebugSettings {
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'testDeviceIds': testDeviceIds,
+        'geography': _enumToString(geography),
+      };
+}
+
+extension on ConsentRequestParameters {
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'tagForUnderAgeOfConsent': tagForUnderAgeOfConsent,
+        'debugSettings': debugSettings?.toJson(),
+      };
+}

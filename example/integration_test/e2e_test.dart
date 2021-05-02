@@ -6,10 +6,12 @@ import 'package:user_messaging_platform/user_messaging_platform.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  late final ump = UserMessagingPlatform.instance;
+
+  setUp(() => ump.resetConsentInfo());
+
   testWidgets('request consent information update',
       (WidgetTester tester) async {
-    final ump = UserMessagingPlatform.instance;
-
     var info = await ump.getConsentInfo();
 
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -19,7 +21,9 @@ void main() {
       expect(info.formStatus, equals(FormStatus.unknown));
     }
 
-    info = await ump.requestConsentInfoUpdate();
+    info = await ump.requestConsentInfoUpdate(ConsentRequestParameters(
+      tagForUnderAgeOfConsent: false,
+    ));
 
     expect(info.formStatus, equals(FormStatus.available));
   });

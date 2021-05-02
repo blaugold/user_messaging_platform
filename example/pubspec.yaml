@@ -1,6 +1,6 @@
 name: user_messaging_platform_example
 description: Demonstrates how to use the user_messaging_platform plugin and contains integration tests.
-
+version: 0.0.0+0
 publish_to: 'none'
 
 environment:

@@ -20,6 +20,7 @@ void main() {
   const channel =
       MethodChannel('com.terwesten.gabriel/user_messaging_platform');
 
+  final methodCallArguments = <String, List<Object?>>{};
   final methodCallResult = <String, Object?>{};
   final methodCallException = <String, PlatformException>{};
 
@@ -27,6 +28,10 @@ void main() {
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      methodCallArguments
+          .putIfAbsent(methodCall.method, () => [])
+          .add(methodCall.arguments);
+
       if (methodCallResult.containsKey(methodCall.method)) {
         return methodCallResult[methodCall.method];
       }
@@ -41,6 +46,7 @@ void main() {
 
   tearDown(() {
     channel.setMockMethodCallHandler(null);
+    methodCallArguments.clear();
     methodCallResult.clear();
     methodCallException.clear();
   });
@@ -67,15 +73,40 @@ void main() {
       code: 'internal',
     );
 
-    late RequestException ex;
-    try {
-      await ump.requestConsentInfoUpdate();
-    } on RequestException catch (_ex) {
-      ex = _ex;
-    }
+    expect(
+      ump.requestConsentInfoUpdate(),
+      throwsA(
+        isA<RequestException>()
+            .having((it) => it.message, 'message', equals('Test'))
+            .having((it) => it.code, 'code', equals(RequestErrorCode.internal)),
+      ),
+    );
+  });
 
-    expect(ex.message, equals('Test'));
-    expect(ex.code, equals(RequestErrorCode.internal));
+  test('requestConsentInfoUpdate parameters', () async {
+    methodCallResult['requestConsentInfoUpdate'] = testPlatformConsentInfo;
+
+    final parameters = ConsentRequestParameters(
+      tagForUnderAgeOfConsent: true,
+      debugSettings: ConsentDebugSettings(
+        geography: DebugGeography.EEA,
+        testDeviceIds: ['a'],
+      ),
+    );
+    final parametersJson = {
+      'tagForUnderAgeOfConsent': true,
+      'debugSettings': {
+        'geography': 'EEA',
+        'testDeviceIds': ['a'],
+      },
+    };
+
+    await ump.requestConsentInfoUpdate(parameters);
+
+    expect(
+      methodCallArguments['requestConsentInfoUpdate']!.first,
+      equals(parametersJson),
+    );
   });
 
   test('showConsentForm success', () async {

@@ -26,10 +26,21 @@ class ConsentDebugSettings {
   });
 
   /// Array of device identifier strings. Debug features are enabled for devices
-  /// with these identifiers. Debug features are always enabled for simulators.
+  /// with these identifiers.
+  ///
+  /// Test devices must be added individually so that debug geography settings
+  /// won't accidentally get released to all users.
+  ///
+  /// ## iOS
+  ///
+  /// Debug features are always enabled for simulators.
+  ///
+  /// ## Android
+  ///
+  /// You can access the hashedDeviceId from logcat once your app calls
   final List<String>? testDeviceIds;
 
-  /// Debug geography.
+  /// The debug geography for testing purposes.
   final DebugGeography geography;
 
   @override

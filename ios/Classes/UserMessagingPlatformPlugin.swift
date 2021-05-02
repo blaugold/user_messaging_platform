@@ -5,6 +5,12 @@ import AppTrackingTransparency
 
 private let unknownErrorCode = "unknown"
 
+private var rootViewController: UIViewController {
+    get {
+        UIApplication.shared.windows.first!.rootViewController!
+    }
+}
+
 public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
@@ -15,19 +21,13 @@ public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
-    private var viewController: UIViewController {
-        get {
-            UIApplication.shared.windows.first!.rootViewController!
-        }
-    }
-    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch (call.method) {
         case "getConsentInfo":
             result(self.getConsentInfo())
             break
         case "requestConsentInfoUpdate":
-            self.requestConsentInfoUpdate(result)
+            self.requestConsentInfoUpdate(call.arguments, result)
             break
         case "showConsentForm":
             self.showConsentForm(result)
@@ -47,20 +47,11 @@ public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
     }
     
     private func getConsentInfo() -> [String: String] {
-        return self.serializeConsentInfo(UMPConsentInformation.sharedInstance)
+        return serializeConsentInfo(UMPConsentInformation.sharedInstance)
     }
     
-    private func serializeConsentInfo(_ info: UMPConsentInformation) -> [String: String] {
-        return [
-            "consentStatus": "\(info.consentStatus)",
-            "consentType": "\(info.consentType)",
-            "formStatus": "\(info.formStatus)",
-        ]
-    }
-    
-    private func requestConsentInfoUpdate(_ result: @escaping FlutterResult) {
-        let parameters = UMPRequestParameters()
-        parameters.tagForUnderAgeOfConsent = false
+    private func requestConsentInfoUpdate(_ arguments: Any?, _ result: @escaping FlutterResult) {
+        let parameters = parseConsentRequestParameters(arguments)
         
         UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: parameters) { error in
             if let error = error as NSError? {
@@ -102,7 +93,7 @@ public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
                     ))
                 }
             } else {
-                form!.present(from: self.viewController) { error in
+                form!.present(from: rootViewController) { error in
                     if let error = error as NSError? {
                         if error.domain == UMPErrorDomain {
                             let code = UMPFormErrorCode(rawValue: error.code)!
@@ -150,7 +141,15 @@ public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
     }
 }
 
-extension UMPConsentStatus: CustomStringConvertible {
+private func serializeConsentInfo(_ info: UMPConsentInformation) -> [String: String] {
+    return [
+        "consentStatus": "\(info.consentStatus)",
+        "consentType": "\(info.consentType)",
+        "formStatus": "\(info.formStatus)",
+    ]
+}
+
+private extension UMPConsentStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -167,7 +166,7 @@ extension UMPConsentStatus: CustomStringConvertible {
     }
 }
 
-extension UMPConsentType: CustomStringConvertible {
+private extension UMPConsentType: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -182,7 +181,7 @@ extension UMPConsentType: CustomStringConvertible {
     }
 }
 
-extension UMPFormStatus: CustomStringConvertible {
+private extension UMPFormStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -197,7 +196,7 @@ extension UMPFormStatus: CustomStringConvertible {
     }
 }
 
-extension UMPRequestErrorCode: CustomStringConvertible {
+private extension UMPRequestErrorCode: CustomStringConvertible {
     public var description: String {
         switch self {
         case .internal:
@@ -214,7 +213,7 @@ extension UMPRequestErrorCode: CustomStringConvertible {
     }
 }
 
-extension UMPFormErrorCode: CustomStringConvertible {
+private extension UMPFormErrorCode: CustomStringConvertible {
     public var description: String {
         switch self {
         case .internal:
@@ -232,7 +231,7 @@ extension UMPFormErrorCode: CustomStringConvertible {
 }
 
 @available(iOS 14, *)
-extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible {
+private extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible {
     public var description: String {
         switch self {
         case .authorized:
@@ -246,5 +245,36 @@ extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible {
         @unknown default:
             fatalError()
         }
+    }
+}
+
+private func parseConsentRequestParameters(json: Any?) -> UMPRequestParameters {
+    let parameters = UMPRequestParameters()
+    if let json = json as? [String:Any?]  {
+        if let tagForUnderAgeOfConsent = json["tagForUnderAgeOfConsent"] as? Bool {
+            parameters.tagForUnderAgeOfConsent = tagForUnderAgeOfConsent 
+        }
+
+        if let debugSettingsJson = json["debugSettings"] as [String:Any?] {
+            let debugSettings = UMPDebugSettings()
+            debugSettings.testDeviceIds = debugSettingsJson["testDeviceIds"] as [String]?
+            debugSettings.geography = parseDebugGeography(debugSettingsJson["geography"] as String)
+            parameters.debugSettings = debugSettings
+        }
+    }
+
+    return parameters
+}
+
+private func parseDebugGeography(value: String) {
+    switch value {
+    case "disabled":
+        return UMPDebugGeography.disabled
+    case "notEEA":
+        return UMPDebugGeography.notEEA
+    case "EEA":
+        return UMPDebugGeography.EEA
+    default:
+        fatalError("Unknown DebugGeography: \(value)")
     }
 }

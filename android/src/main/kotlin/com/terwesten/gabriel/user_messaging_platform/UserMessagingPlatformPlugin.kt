@@ -3,10 +3,7 @@ package com.terwesten.gabriel.user_messaging_platform
 import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
-import com.google.android.ump.ConsentInformation
-import com.google.android.ump.ConsentRequestParameters
-import com.google.android.ump.FormError
-import com.google.android.ump.UserMessagingPlatform
+import com.google.android.ump.*
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -48,7 +45,7 @@ class UserMessagingPlatformPlugin : FlutterPlugin, ActivityAware, MethodCallHand
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "getConsentInfo" -> sendConsentInfo(result)
-            "requestConsentInfoUpdate" -> requestConsentInfoUpdate(result)
+            "requestConsentInfoUpdate" -> requestConsentInfoUpdate(call.arguments, result)
             "showConsentForm" -> showConsentForm(result)
             "resetConsentInfo" -> resetConsentInfo(result)
             else -> result.notImplemented()
@@ -58,8 +55,8 @@ class UserMessagingPlatformPlugin : FlutterPlugin, ActivityAware, MethodCallHand
     private val consentInformation
         get() = UserMessagingPlatform.getConsentInformation(context)!!
 
-    private fun requestConsentInfoUpdate(result: Result) {
-        val params = ConsentRequestParameters.Builder().build()
+    private fun requestConsentInfoUpdate(arguments: Any?, result: Result) {
+        val params = parseConsentRequestParameters(arguments, context!!)
 
         consentInformation.requestConsentInfoUpdate(
                 activity,
@@ -121,15 +118,47 @@ private fun serializeConsentType(consentType: Int): String = when (consentType) 
 }
 
 
-fun serializeFormStatus(consentInformation: ConsentInformation): String = when {
+private fun serializeFormStatus(consentInformation: ConsentInformation): String = when {
     consentInformation.isConsentFormAvailable -> "available"
     else -> "unavailable"
 }
 
-fun serializeFormErrorCode(errorCode: Int): String = when (errorCode) {
+private fun serializeFormErrorCode(errorCode: Int): String = when (errorCode) {
     FormError.ErrorCode.INTERNAL_ERROR -> "internal"
     FormError.ErrorCode.INTERNET_ERROR -> "network"
     FormError.ErrorCode.INVALID_OPERATION -> "invalidOperation"
     FormError.ErrorCode.TIME_OUT -> "timeout"
     else -> throw IllegalArgumentException("Unknown FormErrorCode: $errorCode")
+}
+
+private fun parseConsentRequestParameters(parameters: Any?, context: Context): ConsentRequestParameters {
+    val parametersBuilder = ConsentRequestParameters.Builder()
+
+    if (parameters is Map<*, *>) {
+        parameters["tagForUnderAgeOfConsent"]?.also {
+            parametersBuilder.setTagForUnderAgeOfConsent(it as Boolean)
+        }
+
+        parameters["debugSettings"]?.let { it as Map<*, *> }?.also { debugSettings ->
+            val debugSettingsBuilder = ConsentDebugSettings.Builder(context)
+
+            debugSettings["testDeviceIds"]?.let { it as List<*> }?.forEach {
+                debugSettingsBuilder.addTestDeviceHashedId(it as String)
+            }
+
+            debugSettings["geography"]?.let { parseDebugGeography(it as String) }
+                    ?.also { debugSettingsBuilder.setDebugGeography(it) }
+
+            parametersBuilder.setConsentDebugSettings(debugSettingsBuilder.build())
+        }
+    }
+
+    return parametersBuilder.build()
+}
+
+private fun parseDebugGeography(debugGeography: String): Int = when (debugGeography) {
+    "disabled" -> ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_DISABLED
+    "notEEA" -> ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_NOT_EEA
+    "EEA" -> ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
+    else -> throw IllegalArgumentException("Unknown DebugGeography: $debugGeography")
 }

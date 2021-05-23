@@ -1,3 +1,11 @@
+## 1.0.0
+
+- fix: specify version for `GoogleUserMessagingPlatform` for iOS
+
+**BREAKING CHANGES:**
+
+- feat: remove `ConsentType` API (was unsupported by UMP SDK)
+
 ## 0.2.1
 
 - feat: Add support for ConsentRequestParameters (#12)

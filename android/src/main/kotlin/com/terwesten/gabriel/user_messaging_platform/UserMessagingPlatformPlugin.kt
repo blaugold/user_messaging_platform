@@ -98,7 +98,6 @@ class UserMessagingPlatformPlugin : FlutterPlugin, ActivityAware, MethodCallHand
 private fun serializeContentInfo(consentInformation: ConsentInformation): Map<String, String> =
         mapOf(
                 "consentStatus" to serializeConsentStatus(consentInformation.consentStatus),
-                "consentType" to serializeConsentType(consentInformation.consentType),
                 "formStatus" to serializeFormStatus(consentInformation)
         )
 
@@ -109,14 +108,6 @@ private fun serializeConsentStatus(consentStatus: Int): String = when (consentSt
     ConsentInformation.ConsentStatus.OBTAINED -> "obtained"
     else -> throw IllegalArgumentException("Unknown ConsentStatus: $consentStatus")
 }
-
-private fun serializeConsentType(consentType: Int): String = when (consentType) {
-    ConsentInformation.ConsentType.UNKNOWN -> "unknown"
-    ConsentInformation.ConsentType.PERSONALIZED -> "personalized"
-    ConsentInformation.ConsentType.NON_PERSONALIZED -> "nonPersonalized"
-    else -> throw IllegalArgumentException("Unknown ConsentType: $consentType")
-}
-
 
 private fun serializeFormStatus(consentInformation: ConsentInformation): String = when {
     consentInformation.isConsentFormAvailable -> "available"

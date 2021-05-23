@@ -144,7 +144,6 @@ public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
 private func serializeConsentInfo(_ info: UMPConsentInformation) -> [String: String] {
     return [
         "consentStatus": "\(info.consentStatus)",
-        "consentType": "\(info.consentType)",
         "formStatus": "\(info.formStatus)",
     ]
 }
@@ -160,21 +159,6 @@ extension UMPConsentStatus: CustomStringConvertible {
             return "required";
         case .obtained:
             return "obtained";
-        @unknown default:
-            fatalError()
-        }
-    }
-}
-
-extension UMPConsentType: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .unknown:
-            return "unknown";
-        case .personalized:
-            return "personalized";
-        case .nonPersonalized:
-            return "nonPersonalized";
         @unknown default:
             fatalError()
         }

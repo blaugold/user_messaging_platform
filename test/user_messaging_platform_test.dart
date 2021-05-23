@@ -7,13 +7,11 @@ void main() {
 
   final testPlatformConsentInfo = {
     'consentStatus': 'obtained',
-    'consentType': 'personalized',
     'formStatus': 'available',
   };
 
   final testConsentInfo = ConsentInformation(
     consentStatus: ConsentStatus.obtained,
-    consentType: ConsentType.personalized,
     formStatus: FormStatus.available,
   );
 

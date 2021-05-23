@@ -112,19 +112,6 @@ enum ConsentStatus {
   obtained,
 }
 
-/// Type of user consent.
-enum ConsentType {
-  /// User consent either not obtained or personalized vs < non-personalized
-  /// status undefined.
-  unknown,
-
-  /// User consented to personalized ads.
-  personalized,
-
-  /// User consented to non-personalized ads.
-  nonPersonalized,
-}
-
 /// State values for whether the user has a consent form available to them.
 /// To check whether form status has changed, an update can be requested through
 /// [UserMessagingPlatform.requestConsentInfoUpdate].
@@ -147,17 +134,12 @@ class ConsentInformation {
   /// Const constructor for [ConsentInformation].
   const ConsentInformation({
     required this.consentStatus,
-    required this.consentType,
     required this.formStatus,
   });
 
   /// The user’s consent status. This value is cached between app sessions and
   /// can be read before requesting updated parameters.
   final ConsentStatus consentStatus;
-
-  /// The user’s consent type. This value is cached between app sessions and can
-  /// be read before requesting updated parameters.
-  final ConsentType consentType;
 
   /// Consent form status. This value defaults to UMPFormStatusUnknown and
   /// requires a call to [UserMessagingPlatform.requestConsentInfoUpdate] to
@@ -170,17 +152,14 @@ class ConsentInformation {
       other is ConsentInformation &&
           runtimeType == other.runtimeType &&
           consentStatus == other.consentStatus &&
-          consentType == other.consentType &&
           formStatus == other.formStatus;
 
   @override
-  int get hashCode =>
-      consentStatus.hashCode ^ consentType.hashCode ^ formStatus.hashCode;
+  int get hashCode => consentStatus.hashCode ^ formStatus.hashCode;
 
   @override
   String toString() => 'ConsentInformation('
       'consentStatus: $consentStatus, '
-      'consentType: $consentType, '
       'formStatus: $formStatus'
       ')';
 }
@@ -445,7 +424,6 @@ ConsentInformation _parseConsentInformation(Map<String, String> info) =>
     ConsentInformation(
       consentStatus:
           _enumFromString(ConsentStatus.values, info['consentStatus']!)!,
-      consentType: _enumFromString(ConsentType.values, info['consentType']!)!,
       formStatus: _enumFromString(FormStatus.values, info['formStatus']!)!,
     );
 

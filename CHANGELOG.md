@@ -1,3 +1,7 @@
+## 1.1.0
+
+- feat: update UMP SDK to 2.0.0
+
 ## 1.0.0
 
 - fix: specify version for `GoogleUserMessagingPlatform` for iOS

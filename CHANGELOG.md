@@ -1,3 +1,7 @@
+## 1.2.0
+
+- feat: support Flutter `2.10.0`
+
 ## 1.1.0
 
 - feat: update UMP SDK to 2.0.0
@@ -20,7 +24,7 @@
 
 ## 0.2.0
 
-- **FEAT** migrate to nullsafety
+- feat: migrate to nullsafety
 
 ## 0.1.0+1
 

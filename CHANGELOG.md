@@ -1,3 +1,7 @@
+## 1.2.0+0
+
+- docs: add reference to `cbl`
+
 ## 1.2.0
 
 - feat: support Flutter `2.10.0`

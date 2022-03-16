@@ -2,14 +2,31 @@
 ![](https://badgen.net/pub/license/user_messaging_platform)
 ![](https://badgen.net/pub/flutter-platform/user_messaging_platform)
 
-# user_messaging_platform
+A flutter plugin which provides a Dart API for the User Messaging Platform (UMP)
+SDK, which is the Consent Management Platform (CMP) SDK provided as part of
+Google's [Funding Choices].
 
-A flutter plugin which provides a Dart API for the User Messaging Platform (UMP) SDK, which is the 
-Consent Management Platform (CMP) SDK provided as part of Google's [Funding Choices].
+Also, see the
+[iabtcf_consent_info](https://pub.dev/packages/iabtcf_consent_info) package, for
+reading TCF consent info, made available though Consent Management Platform
+SDKs, such as UMP. If you have configured Funding Choices to obtain consent for
+additional purposes for you, the publisher, this package allows you to access
+that information.
 
-Also, see the [iabtcf_consent_info](https://pub.dev/packages/iabtcf_consent_info) package, for reading TCF consent
-info, made available though Consent Management Platform SDKs, such as UMP. If you have configured Funding Choices to
-obtain consent for additional purposes for you, the publisher, this package allows you to access that information. 
+---
+
+If you're looking for a **database solution**, check out
+[`cbl`](https://pub.dev/packages/cbl), another project of mine. It brings
+Couchbase Lite to **standalone Dart** and **Flutter**, with support for:
+
+- **Full-Text Search**,
+- **Expressive Queries**,
+- **Data Sync**,
+- **Change Notifications**
+
+and more.
+
+---
 
 ## Setup
 
@@ -19,7 +36,8 @@ The UMP SDK requires some platform dependent setup.
 
 #### App ID
 
-1. Obtain your APP ID by following the [Help Center instructions](https://support.google.com/admob/answer/7356431).
+1. Obtain your APP ID by following the
+   [Help Center instructions](https://support.google.com/admob/answer/7356431).
 
 1. Add your app ID to your AndroidManifest.xml:
 
@@ -51,13 +69,15 @@ The UMP SDK requires some platform dependent setup.
 
 #### More information
 
-For more information visit the [Android UMP SDK quick start guide](https://developers.google.com/admob/ump/android/quick-start).
+For more information visit the
+[Android UMP SDK quick start guide](https://developers.google.com/admob/ump/android/quick-start).
 
 ### iOS
 
 #### App ID
 
-1. Obtain your APP ID by following the [Help Center instructions](https://support.google.com/admob/answer/7356431).
+1. Obtain your APP ID by following the
+   [Help Center instructions](https://support.google.com/admob/answer/7356431).
 
 1. Add your app ID to your Info.plist:
 
@@ -77,17 +97,18 @@ If you plan to use the App Tracking Transparency framework:
 <string>This identifier will be used to deliver personalized ads to you.</string>
 ```
 
-1. Link the `Runner` target to the `AppTrackingTransparency` under 
-`Targets` -> `Runner` -> `Frameworks, Libraries, and Embedded Content`.
+1. Link the `Runner` target to the `AppTrackingTransparency` under `Targets` ->
+   `Runner` -> `Frameworks, Libraries, and Embedded Content`.
 
 #### More information
 
-For more information visit the [iOS UMP SDK quick start guide](https://developers.google.com/admob/ump/ios/quick-start).
+For more information visit the
+[iOS UMP SDK quick start guide](https://developers.google.com/admob/ump/ios/quick-start).
 
 ## Usage
 
-This basic usage example show how to update the consent info and show the consent form to the user if consent is
-required:
+This basic usage example show how to update the consent info and show the
+consent form to the user if consent is required:
 
 ```dart
 void updateConsent() async {
@@ -104,10 +125,12 @@ void updateConsent() async {
 
 ### iOS: App Tracking Transparency
 
-You can let the UMP SDK handle the [ATT permission request](https://support.google.com/fundingchoices/answer/9995402).
+You can let the UMP SDK handle the
+[ATT permission request](https://support.google.com/fundingchoices/answer/9995402).
 
-If you would like to determine when to show the permission request yourself, you can check the 
-`TrackingAuthorizationStatus` and `requestTrackingAuthorization` through this plugin:
+If you would like to determine when to show the permission request yourself, you
+can check the `TrackingAuthorizationStatus` and `requestTrackingAuthorization`
+through this plugin:
 
 ```dart
 void showATTPermissionRequest() async {
@@ -121,7 +144,7 @@ void showATTPermissionRequest() async {
 
 ## Example
 
-For an example to verify you configuration, take a look at the [example tab](https://pub.dev/packages/user_messaging_platform/example).
+For an example to verify you configuration, take a look at the
+[example tab](https://pub.dev/packages/user_messaging_platform/example).
 
-
-[Funding Choices]: https://developers.google.com/funding-choices
+[funding choices]: https://developers.google.com/funding-choices

@@ -1,3 +1,7 @@
+## 1.2.1
+
+- refactor: use `self` in closure
+
 ## 1.2.0+0
 
 - docs: add reference to `cbl`

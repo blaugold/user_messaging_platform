@@ -110,7 +110,7 @@ public class UserMessagingPlatformPlugin: NSObject, FlutterPlugin {
                             ))
                         }
                     } else {
-                        result(getConsentInfo())
+                        result(self.getConsentInfo())
                     }
                 }
             }

@@ -1,3 +1,8 @@
+## 1.3.0
+
+- feat: upgrade UMP SDK to 2.1.0
+- fix: handle UMPFormErrorCode.invalidViewController
+
 ## 1.2.1
 
 - refactor: use `self` in closure

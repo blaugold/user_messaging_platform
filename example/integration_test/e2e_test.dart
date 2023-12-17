@@ -10,8 +10,7 @@ void main() {
 
   setUp(() => ump.resetConsentInfo());
 
-  testWidgets('request consent information update',
-      (WidgetTester tester) async {
+  testWidgets('request consent information update', (tester) async {
     var info = await ump.getConsentInfo();
 
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -29,14 +28,11 @@ void main() {
   });
 
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    testWidgets(
-      'get tracking authorization status',
-      (WidgetTester tester) async {
-        final status = await UserMessagingPlatform.instance
-            .getTrackingAuthorizationStatus();
+    testWidgets('get tracking authorization status', (tester) async {
+      final status =
+          await UserMessagingPlatform.instance.getTrackingAuthorizationStatus();
 
-        expect(status, equals(TrackingAuthorizationStatus.notDetermined));
-      },
-    );
+      expect(status, equals(TrackingAuthorizationStatus.notDetermined));
+    });
   }
 }

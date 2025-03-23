@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> This package has been depreacted in favor or the UMP API that is available as part of
+> [`google_mobile_ads`](https://pub.dev/packages/google_mobile_ads).
+
 [![](https://badgen.net/pub/v/user_messaging_platform)](https://pub.dev/packages/user_messaging_platform)
 ![](https://badgen.net/pub/license/user_messaging_platform)
 ![](https://badgen.net/pub/flutter-platform/user_messaging_platform)
